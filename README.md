@@ -8,6 +8,7 @@ This is a simple project for the sake of learning the basics of the OpenGL API.
 # TODO List
 |Task| Status|
 |:---| :-----|
+|Clean messy code|:no_mouth: In Progress|
 |Import ImGUI|:no_mouth: In Progress|
 |Make pendulum interactive|:sleeping: Planned|
 |Add a spring pendulum feature|:sleeping: Planned|
@@ -24,7 +25,7 @@ This is a simple project for the sake of learning the basics of the OpenGL API.
 
 - Huge shout out to [The Coding Train](https://www.youtube.com/channel/UCvjgXvBlbQiydffZU7m1_aw) for the [Simple Pendulum Simulation](https://www.youtube.com/watch?v=NBWMtlbbOag) video!
 The math and logic in my project came from this video. (I really just copied the calculations made in the video entirely :zipper_mouth_face:). Since my goal for this project is to 
-learn OpenGL I did not want to spend too much time on the logistics on how to get the pendulum to behave. I will, however, need to sort out the logic for an imteractive pendulum on
+learn OpenGL I did not want to spend too much time on the logistics of how to get the pendulum to behave. I will, however, need to sort out the logic for an imteractive pendulum on
 my own.
 
 - [Learn OpenGL](https://learnopengl.com/)
