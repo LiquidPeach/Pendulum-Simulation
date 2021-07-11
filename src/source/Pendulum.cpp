@@ -11,9 +11,9 @@ Pendulum::Pendulum(float rope_X, float rope_Y, float ball_X, float ball_Y)
       ball(ball_X, ball_Y),
       m_Model(0), m_View(0), m_Proj(0), m_Mvp(0)
 {
-    m_Angle = sin(PI / 4);
+    m_Angle  = sin(PI / 4);
     m_Length = rope_Y * 2;
-    m_Pivot = ball_Y + m_Length;
+    m_Pivot  = ball_Y + m_Length;
 
     shader.InitShaders("src/shaders/vertexShader.vert", "src/shaders/fragmentShader.frag");
     shader.Bind();
@@ -48,7 +48,7 @@ void Pendulum::SetProjection(unsigned int windowWidth, unsigned int windowHeight
 
 void Pendulum::Calculations() {
 
-    // Thank you The Coding Train for the Better Pong video!
+    // Thank you The Coding Train for the Simple Pendulum Simulation video!
     float force = GRAVITY * sin(m_Angle);
     m_Accel = (-1 * force) / m_Length;
 
@@ -60,10 +60,10 @@ void Pendulum::Calculations() {
 
 void Pendulum::UpdatePosition() {
 
-    glm::vec3 pivot(0, m_Pivot, 0);                     // 1. Create desired pivot point of rotation (where the top of the rope would be)
-    m_Model = glm::translate(glm::mat4(1.0f), pivot);  // 2. translate the model to the pivot
+    glm::vec3 pivot(0, m_Pivot, 0);                      // 1. Create desired pivot point of rotation (where the top of the rope would be)
+    m_Model  = glm::translate(glm::mat4(1.0f), pivot);   // 2. translate the model to the pivot
     m_Model *= glm::rotate(glm::mat4(1.0f), m_Angle, glm::vec3(0, 0, 1.0f));  //3. Rotate the model
-    m_Model *= glm::translate(glm::mat4(1.0f), -pivot); // 4. bring the model back to its original position
+    m_Model *= glm::translate(glm::mat4(1.0f), -pivot);  // 4. bring the model back to its original position
 }
 
 void Pendulum::DrawPendulum() {
