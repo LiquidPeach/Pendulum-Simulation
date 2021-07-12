@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Downloads\glad\src\glad.c" />
+    <ClCompile Include="src\source\UserInterface.cpp" />
     <ClCompile Include="src\imgui\imgui.cpp" />
     <ClCompile Include="src\imgui\imgui_demo.cpp" />
     <ClCompile Include="src\imgui\imgui_draw.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="src\header\Rope.h" />
     <ClInclude Include="src\header\Shader.h" />
     <ClInclude Include="src\header\Texture.h" />
+    <ClInclude Include="src\header\UserInterface.h" />
     <ClInclude Include="src\header\VertexArray.h" />
     <ClInclude Include="src\header\VertexBuffer.h" />
     <ClInclude Include="src\imgui\imconfig.h" />

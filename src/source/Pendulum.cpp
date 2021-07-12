@@ -1,7 +1,3 @@
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
 #include "Pendulum.h"
 
 #include <iostream>
@@ -12,9 +8,9 @@ static const float GRAVITY = 1.0f;
 
 Pendulum::Pendulum(float ropeLength, float ballSize, GLFWwindow* window)
     : rope(ropeLength, ((ropeLength/2) + (ballSize/2))),
-      ball(ballSize), translation(1.0f),
+      ball(ballSize), UI(window),
       m_ModelRope(0), m_ModelBall(0), m_View(0), m_Proj(0),
-      m_MvpBall(0),   m_MvpRope(0)
+      m_MvpBall(0),   m_MvpRope(0), translation(1.0f)
 {
     m_Angle = sin(PI / 4);
     m_Length = ropeLength;
@@ -24,22 +20,6 @@ Pendulum::Pendulum(float ropeLength, float ballSize, GLFWwindow* window)
     shader.Bind();
     shader.SetUniform4f("vertexColor", 1.0f, (198.0f / 255.0f), (25.0f / 255.0f), 1.0f);
     shader.Unbind();
-
-    // Set up ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    // Set up style
-    ImGui::StyleColorsDark();
-    // Set up Platform and Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 330");
-}
-
-Pendulum::~Pendulum() {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 }
 
 void Pendulum::SetProjection(unsigned int windowWidth, unsigned int windowHeight) {
@@ -71,7 +51,7 @@ void Pendulum::Calculations() { // TODO - Update calculations
 
     // Thank you The Coding Train for the Simple Pendulum Simulation video!
     float force = GRAVITY * sin(m_Angle);
-    m_Accel = (-1 * force) / (translation.y * m_Length); // <- this is incorrect
+    m_Accel = (-1 * force) / (translation.y * m_Length);
 
     //m_Velocity *= 0.99;   // Dampening
 
@@ -86,7 +66,13 @@ void Pendulum::SetRopeLength() {
     float minValue = -((m_WindowHeight / 2) - (ball.GetSize() / 2));
     float maxValue =  ((m_WindowHeight / 2) - (ball.GetSize() / 2));
 
-    ImGui::SliderFloat("Length of Rope", &translation.y, 0.25f, 2.0f);
+    UI.SetSlider("Length", &translation.y, 0.25f, 2.0f);
+
+    if (UI.IsButtonPressed()) {
+        m_Angle = 0.01f;
+        m_Velocity = 0.01f;
+        m_Accel = 0.01f;
+    }
 }
 
 void Pendulum::UpdateRopePosition() {
@@ -112,10 +98,7 @@ void Pendulum::UpdateBallPosition() {
 void Pendulum::DrawPendulum() {
 
     shader.Bind();
-
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+    UI.NewFrame();
 
     Calculations();
     UpdateBallPosition();
@@ -137,9 +120,6 @@ void Pendulum::DrawPendulum() {
 
     ball.DrawBall();
 
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
+    UI.Render();
     shader.Unbind();
 }
