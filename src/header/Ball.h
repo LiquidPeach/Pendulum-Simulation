@@ -12,10 +12,13 @@ private:
 	IndexBuffer  IBO;
 	Texture texture;
 
+	float m_Size;
+
 public:
-	Ball(float x_coord, float y_coord);
+	Ball(float size);
 	~Ball() = default;
 
-	void DrawBall() const;
-	void DeleteObject() const;
+	float GetSize()      const { return m_Size; }
+	void  DrawBall()     const;
+	void  DeleteObject() const;
 };

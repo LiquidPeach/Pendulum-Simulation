@@ -10,10 +10,14 @@ private:
 	VertexBuffer VBO;
 	IndexBuffer  IBO;
 
+	float m_Width, m_Length;
+
 public:
-	Rope(float x_coord, float y_coord, float offset);
+	Rope(float ropeLength, float offset);
 	~Rope() = default;
 
-	void DrawRope() const;
-	void DeleteObject() const;
+	float GetWidth()     const { return m_Width; }
+	float GetLength()    const { return m_Length; }
+	void  DrawRope()     const;
+	void  DeleteObject() const;
 };

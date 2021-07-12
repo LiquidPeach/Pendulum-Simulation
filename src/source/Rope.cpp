@@ -1,13 +1,14 @@
 #include "Rope.h"
 
-Rope::Rope(float x_coord, float y_coord, float offset) { // Offset is to set the rope at the top of the ball (to to form the pendulum shape)
+Rope::Rope(float ropeLength, float offset) // Offset is to set the rope at the top of the ball (to to form the pendulum shape)
+	: m_Width(10.0f), m_Length(ropeLength)
+{
 
 	float vertices[] = {
-		//	Positions	
-		-x_coord, -y_coord + offset,
-		 x_coord, -y_coord + offset,
-		 x_coord,  y_coord + offset,
-		-x_coord,  y_coord + offset
+		-(m_Width/2), -(ropeLength/2) + offset,
+		 (m_Width/2), -(ropeLength/2) + offset,
+		 (m_Width/2),  (ropeLength/2) + offset,
+		-(m_Width/2),  (ropeLength/2) + offset
 	};
 
 	unsigned int indices[] = {
@@ -17,7 +18,7 @@ Rope::Rope(float x_coord, float y_coord, float offset) { // Offset is to set the
 
 	VAO.Bind();
 	VBO.CreateBuffer(vertices, sizeof(vertices));
-	IBO.CreateBuffer(indices, sizeof(indices));
+	IBO.CreateBuffer(indices,  sizeof(indices));
 
 	VAO.LinkAttributes(VBO, 0, 2, GL_FLOAT, 2 * sizeof(float), (void*)0);
 }

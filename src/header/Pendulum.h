@@ -14,19 +14,23 @@ private:
 	Rope rope;
 	Ball ball;
 
-	glm::mat4 m_Model, m_View, m_Proj, m_Mvp;
-	float m_Velocity = 0, m_Accel = 0;
-	float m_Angle = 0, m_Length = 0, m_Pivot = 0;
+	glm::vec3 translation;
+	glm::mat4    m_ModelBall, m_ModelRope, m_View, m_Proj, m_MvpBall, m_MvpRope;
+	float        m_Pivot = 0, m_Angle  = 0;
+	float        m_Accel = 0, m_Velocity = 0, m_Length = 0;
 	unsigned int m_WindowWidth = 0, m_WindowHeight = 0;
 
 public:
-	Pendulum(float rope_X, float rope_Y, float ball_X, float ball_Y);
-	~Pendulum() = default;
+	Pendulum(float ropeLength, float ballSize, GLFWwindow* window);
+	~Pendulum();
 
 	void SetProjection(unsigned int windowWidth, unsigned int windowHeight);
 
-	void Calculations();
+	float GetRopeLength() const { return m_Length; }
 
-	void UpdatePosition();
+	void Calculations();
+	void SetRopeLength();
+	void UpdateRopePosition();
+	void UpdateBallPosition();
 	void DrawPendulum();
 };

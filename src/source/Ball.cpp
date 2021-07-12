@@ -1,12 +1,14 @@
 #include "Ball.h"
 
-Ball::Ball(float x_coord, float y_coord) {
+Ball::Ball(float size) 
+	: m_Size(size)
+{
 	float vertices[] = {
 		//	Positions		     Texture
-			-x_coord, -y_coord,  0.0f, 0.0f,
-			 x_coord, -y_coord,  1.0f, 0.0f,
-			 x_coord,  y_coord,  1.0f, 1.0f,
-			-x_coord,  y_coord,  0.0f, 1.0f
+			-(size/2), -(size/2),  0.0f, 0.0f,
+			 (size/2), -(size/2),  1.0f, 0.0f,
+			 (size/2),  (size/2),  1.0f, 1.0f,
+			-(size/2),  (size/2),  0.0f, 1.0f
 	};
 
 	unsigned int indices[] = {
@@ -16,7 +18,7 @@ Ball::Ball(float x_coord, float y_coord) {
 
 	VAO.Bind();
 	VBO.CreateBuffer(vertices, sizeof(vertices));
-	IBO.CreateBuffer(indices, sizeof(indices));
+	IBO.CreateBuffer(indices,  sizeof(indices));
 	texture.CreateTexture("src/images/Bob.png");
 	texture.Bind();
 
