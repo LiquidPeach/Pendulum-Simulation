@@ -2,6 +2,7 @@
 
 # About :book:
 This is a simple project for the sake of learning the basics of the OpenGL API.
+It's still in the 'rough draft' phase so don't judge it too harshly :skull:
 
 ![pendulum](https://user-images.githubusercontent.com/23224890/125177651-5572e500-e192-11eb-9455-ef9d73480c9f.png)
 
