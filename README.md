@@ -10,8 +10,8 @@ It's still in the 'rough draft' phase so don't judge it too harshly :skull:
 |Task| Status|
 |:---| :-----|
 |Clean messy code|:no_mouth: In Progress|
-|Import ImGUI|:no_mouth: In Progress|
-|Make pendulum interactive|:sleeping: Planned|
+|Import ImGUI|:heavy_check_mark: Completed|
+|Make pendulum interactive|:no_mouth: In Progress|
 |Add a spring pendulum feature|:sleeping: Planned|
 |Add rope physics|:sleeping: Planned|
 
