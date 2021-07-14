@@ -5,8 +5,8 @@
 class IndexBuffer {
 
 private:
-	unsigned int m_BufferID = 0;
-	GLsizeiptr m_IndexSize = 0;
+	unsigned int m_BufferID  = 0;
+	GLsizeiptr   m_IndexSize = 0;
 
 public:
 	IndexBuffer() = default;

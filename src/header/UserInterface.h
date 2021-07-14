@@ -9,7 +9,7 @@ struct UserInterface {
 	UserInterface(GLFWwindow* window);
 	~UserInterface();
 	void SetSlider(const char* name, float* value, float min, float max);
-	bool IsButtonPressed();
-	void NewFrame();
-	void Render();
+	bool IsButtonPressed() const;
+	void NewFrame() const;
+	void Render() const;
 };

@@ -5,8 +5,8 @@
 class VertexBuffer {
 
 private:
-	unsigned int  m_BufferID = 0;
-	GLsizeiptr m_VertexSize = 0;
+	unsigned int  m_BufferID   = 0;
+	GLsizeiptr    m_VertexSize = 0;
 
 public:
 	VertexBuffer() = default;

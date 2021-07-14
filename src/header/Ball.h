@@ -10,7 +10,7 @@ private:
 	VertexArray  VAO;
 	VertexBuffer VBO;
 	IndexBuffer  IBO;
-	Texture texture;
+	Texture      texture;
 
 	float m_Size;
 

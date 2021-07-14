@@ -10,13 +10,14 @@ Pendulum::Pendulum(float ropeLength, float ballSize, GLFWwindow* window)
     : rope(ropeLength, ((ropeLength/2) + (ballSize/2))),
       ball(ballSize), UI(window),
       m_ModelRope(0), m_ModelBall(0), m_View(0), m_Proj(0),
-      m_MvpBall(0),   m_MvpRope(0), translation(1.0f)
+      m_MvpBall(0),   m_MvpRope(0),   m_Translation(1.0f)
 {
-    m_Angle = sin(PI / 4);
+    m_Window = window;
+    m_Angle  = sin(PI / 4);
     m_Length = ropeLength;
-    m_Pivot = (ballSize/2) + ropeLength; // Set pivot point to the top of the rope
+    m_Pivot  = (ballSize/2) + ropeLength; // Set pivot point to the top of the rope
 
-    shader.InitShaders("src/shaders/vertexShader.vert", "src/shaders/fragmentShader.frag");
+    shader.InitShaders("src/shaders/mainShader.vert", "src/shaders/mainShader.frag");
     shader.Bind();
     shader.SetUniform4f("vertexColor", 1.0f, (198.0f / 255.0f), (25.0f / 255.0f), 1.0f);
     shader.Unbind();
@@ -51,7 +52,7 @@ void Pendulum::Calculations() { // TODO - Update calculations
 
     // Thank you The Coding Train for the Simple Pendulum Simulation video!
     float force = GRAVITY * sin(m_Angle);
-    m_Accel = (-1 * force) / (translation.y * m_Length);
+    m_Accel = (-1 * force) / (m_Translation.y * m_Length);
 
     //m_Velocity *= 0.99;   // Dampening
 
@@ -59,14 +60,44 @@ void Pendulum::Calculations() { // TODO - Update calculations
     m_Angle += m_Velocity;
 }
 
+void Pendulum::InputHandling() {
+
+    /*        Model matrix
+    [ X-axis.x, X-axis.y, X-axis.z, 0 ]
+    [ Y-axis.x, Y-axis.y, Y-axis.z, 0 ]
+    [ Z-axis.x, Z-axis.y, Z-axis.z, 0 ]
+    [ trans.x,  trans.y,  trans.z,  1 ] 
+    */
+    float xBallPos = m_ModelBall[3][0] + (m_WindowWidth / 2);
+    float yBallPos = (m_WindowHeight / 2) - m_ModelBall[3][1];
+    
+    float minX = xBallPos - (ball.GetSize() / 2);
+    float maxX = xBallPos + (ball.GetSize() / 2);
+    float maxY = yBallPos + (ball.GetSize() / 2);
+    float minY = yBallPos - (ball.GetSize() / 2);
+
+    double xMousePos, yMousePos;
+    glfwGetCursorPos(m_Window, &xMousePos, &yMousePos);
+
+    if (xMousePos > minX && xMousePos < maxX) { // If the mouse is within the bounds of the ball
+        if (yMousePos > minY && yMousePos < maxY) {
+            std::cout << "True\n";
+        }
+        else
+            std::cout << "False\n";
+    }
+    else
+        std::cout << "False\n";
+}
+
 void Pendulum::SetRopeLength() {
 
-    m_ModelRope *= glm::scale(glm::mat4(1.0f), translation);
+    m_ModelRope *= glm::scale(glm::mat4(1.0f), m_Translation);
 
     float minValue = -((m_WindowHeight / 2) - (ball.GetSize() / 2));
     float maxValue =  ((m_WindowHeight / 2) - (ball.GetSize() / 2));
 
-    UI.SetSlider("Length", &translation.y, 0.25f, 2.0f);
+    UI.SetSlider("Length", &m_Translation.y, 0.25f, 2.0f);
 
     if (UI.IsButtonPressed()) {
         m_Angle = 0.01f;
@@ -86,7 +117,7 @@ void Pendulum::UpdateRopePosition() {
 
 void Pendulum::UpdateBallPosition() {
 
-    float y_coord = (m_WindowHeight / 2) - (m_Length * translation.y);
+    float y_coord = (m_WindowHeight / 2) - (m_Length * m_Translation.y);
 
     glm::vec3 pivot(0.0f, m_Pivot, 0.0f);                    // 1. Create desired pivot point of rotation (where the top of the rope would be)
     m_ModelBall  = glm::translate(glm::mat4(1.0f), pivot);   // 2. translate the model to the pivot
@@ -96,6 +127,8 @@ void Pendulum::UpdateBallPosition() {
 }
 
 void Pendulum::DrawPendulum() {
+
+    InputHandling();
 
     shader.Bind();
     UI.NewFrame();

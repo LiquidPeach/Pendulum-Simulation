@@ -22,17 +22,17 @@ void UserInterface::SetSlider(const char* name, float* value, float min, float m
     ImGui::SliderFloat(name, value, min, max);
 }
 
-bool UserInterface::IsButtonPressed() {
+bool UserInterface::IsButtonPressed() const{
     return ImGui::IsItemActive();
 }
 
-void UserInterface::NewFrame() {
+void UserInterface::NewFrame() const{
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
 
-void UserInterface::Render() {
+void UserInterface::Render() const{
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
