@@ -6,16 +6,16 @@
 static const float PI = 3.141592654f;
 static const float GRAVITY = 1.0f;
 
-Pendulum::Pendulum(float ropeLength, float ballSize, GLFWwindow* window)
-    : rope(ropeLength, ((ropeLength/2) + (ballSize/2))),
+Pendulum::Pendulum(float ropeLength, float ballSize, GLFWwindow * window)
+    : rope(ropeLength, ((ropeLength / 2) + (ballSize / 2))),
       ball(ballSize), UI(window),
       m_ModelRope(0), m_ModelBall(0), m_View(0), m_Proj(0),
-      m_MvpBall(0),   m_MvpRope(0),   m_Translation(1.0f)
+      m_MvpBall(0), m_MvpRope(0), m_Translation(1.0f)
 {
     m_Window = window;
     m_Angle  = sin(PI / 4);
     m_Length = ropeLength;
-    m_Pivot  = (ballSize/2) + ropeLength; // Set pivot point to the top of the rope
+    m_Pivot  = (ballSize / 2) + ropeLength; // Set pivot point to the top of the rope
 
     shader.InitShaders("src/shaders/mainShader.vert", "src/shaders/mainShader.frag");
     shader.Bind();
@@ -25,7 +25,7 @@ Pendulum::Pendulum(float ropeLength, float ballSize, GLFWwindow* window)
 
 void Pendulum::SetProjection(unsigned int windowWidth, unsigned int windowHeight) {
 
-    m_WindowWidth  = windowWidth;
+    m_WindowWidth = windowWidth;
     m_WindowHeight = windowHeight;
 
     // To calculate the appropriate position of the camera depending on the size of the rope
@@ -36,8 +36,8 @@ void Pendulum::SetProjection(unsigned int windowWidth, unsigned int windowHeight
 
     m_ModelBall = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
     m_ModelRope = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
-    m_View  = glm::translate(glm::mat4(1.0f), glm::vec3((windowWidth / 2), y_view, 0));
-    m_Proj  = glm::ortho(0.0f, (float)m_WindowWidth, 0.0f, (float)m_WindowHeight, -1.0f, 1.0f);
+    m_View = glm::translate(glm::mat4(1.0f), glm::vec3((windowWidth / 2), y_view, 0));
+    m_Proj = glm::ortho(0.0f, (float)m_WindowWidth, 0.0f, (float)m_WindowHeight, -1.0f, 1.0f);
 
     m_MvpBall = m_ModelBall * m_View * m_Proj;
     m_MvpRope = m_ModelRope * m_View * m_Proj;
@@ -66,11 +66,13 @@ void Pendulum::InputHandling() {
     [ X-axis.x, X-axis.y, X-axis.z, 0 ]
     [ Y-axis.x, Y-axis.y, Y-axis.z, 0 ]
     [ Z-axis.x, Z-axis.y, Z-axis.z, 0 ]
-    [ trans.x,  trans.y,  trans.z,  1 ] 
+    [ trans.x,  trans.y,  trans.z,  1 ]
     */
+
+    // Get balls position measured in the screen's coordinates, where the top left is the origin
     float xBallPos = m_ModelBall[3][0] + (m_WindowWidth / 2);
     float yBallPos = (m_WindowHeight / 2) - m_ModelBall[3][1];
-    
+
     float minX = xBallPos - (ball.GetSize() / 2);
     float maxX = xBallPos + (ball.GetSize() / 2);
     float maxY = yBallPos + (ball.GetSize() / 2);
@@ -79,15 +81,17 @@ void Pendulum::InputHandling() {
     double xMousePos, yMousePos;
     glfwGetCursorPos(m_Window, &xMousePos, &yMousePos);
 
+    bool isHovering = false;
+
     if (xMousePos > minX && xMousePos < maxX) { // If the mouse is within the bounds of the ball
         if (yMousePos > minY && yMousePos < maxY) {
-            std::cout << "True\n";
+            isHovering = true;
         }
-        else
-            std::cout << "False\n";
     }
-    else
-        std::cout << "False\n";
+
+    if (isHovering && glfwGetMouseButton(m_Window, 0) == GLFW_PRESS) {
+        std::cout <<"Click!\n";
+    }
 }
 
 void Pendulum::SetRopeLength() {
