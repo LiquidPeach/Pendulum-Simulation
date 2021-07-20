@@ -3,8 +3,10 @@
 #include <iostream>
 #include <math.h>
 
-static const float PI = 3.141592654f;
+static const float PI      = 3.141592654f;
 static const float GRAVITY = 1.0f;
+static bool isHovering     = false;
+static bool isButtonDown   = false;
 
 Pendulum::Pendulum(float ropeLength, float ballSize, GLFWwindow * window)
     : rope(ropeLength, ((ropeLength / 2) + (ballSize / 2))),
@@ -13,7 +15,7 @@ Pendulum::Pendulum(float ropeLength, float ballSize, GLFWwindow * window)
       m_MvpBall(0), m_MvpRope(0), m_Translation(1.0f)
 {
     m_Window = window;
-    m_Angle  = sin(PI / 4);
+    m_Angle  = 0.0f;
     m_Length = ropeLength;
     m_Pivot  = (ballSize / 2) + ropeLength; // Set pivot point to the top of the rope
 
@@ -51,13 +53,15 @@ void Pendulum::SetProjection(unsigned int windowWidth, unsigned int windowHeight
 void Pendulum::Calculations() { // TODO - Update calculations
 
     // Thank you The Coding Train for the Simple Pendulum Simulation video!
-    float force = GRAVITY * sin(m_Angle);
-    m_Accel = (-1 * force) / (m_Translation.y * m_Length);
+    if (!isButtonDown) {
+        float force = GRAVITY * sin(m_Angle);
+        m_Accel = (-1 * force) / (m_Translation.y * m_Length);
 
-    //m_Velocity *= 0.99;   // Dampening
+        m_Velocity *= 0.99;   // Dampening
 
-    m_Velocity += m_Accel;
-    m_Angle += m_Velocity;
+        m_Velocity += m_Accel;
+        m_Angle += m_Velocity;
+    }
 }
 
 void Pendulum::InputHandling() {
@@ -66,47 +70,48 @@ void Pendulum::InputHandling() {
     [ X-axis.x, X-axis.y, X-axis.z, 0 ]
     [ Y-axis.x, Y-axis.y, Y-axis.z, 0 ]
     [ Z-axis.x, Z-axis.y, Z-axis.z, 0 ]
-    [ trans.x,  trans.y,  trans.z,  1 ]
+    [ transl.x, transl.y, transl.z, 1 ]
     */
 
     // Get balls position measured in the screen's coordinates, where the top left is the origin
     float xBallPos = m_ModelBall[3][0] + (m_WindowWidth / 2);
     float yBallPos = (m_WindowHeight / 2) - m_ModelBall[3][1];
 
+    // Bounds of the ball
     float minX = xBallPos - (ball.GetSize() / 2);
     float maxX = xBallPos + (ball.GetSize() / 2);
-    float maxY = yBallPos + (ball.GetSize() / 2);
     float minY = yBallPos - (ball.GetSize() / 2);
+    float maxY = yBallPos + (ball.GetSize() / 2);
 
     double xMousePos, yMousePos;
     glfwGetCursorPos(m_Window, &xMousePos, &yMousePos);
 
-    bool isHovering = false;
-
-    if (xMousePos > minX && xMousePos < maxX) { // If the mouse is within the bounds of the ball
-        if (yMousePos > minY && yMousePos < maxY) {
+    if (xMousePos > minX && xMousePos < maxX) {   // If the mouse is within the bounds of the ball
+        if (yMousePos > minY && yMousePos < maxY)
             isHovering = true;
-        }
+        else
+            isHovering = false;
     }
+    else
+        isHovering = false;
 
-    if (isHovering && glfwGetMouseButton(m_Window, 0) == GLFW_PRESS) {
-        std::cout <<"Click!\n";
-    }
+    int state = glfwGetMouseButton(m_Window, GLFW_MOUSE_BUTTON_LEFT);
+    if (isHovering && state == GLFW_PRESS)
+        isButtonDown = true;
+    else
+        isButtonDown = false;
 }
 
-void Pendulum::SetRopeLength() {
+void Pendulum::SetRopeLength() { // Also setting rope angle with ImGui temporarily
 
     m_ModelRope *= glm::scale(glm::mat4(1.0f), m_Translation);
 
-    float minValue = -((m_WindowHeight / 2) - (ball.GetSize() / 2));
-    float maxValue =  ((m_WindowHeight / 2) - (ball.GetSize() / 2));
-
     UI.SetSlider("Length", &m_Translation.y, 0.25f, 2.0f);
+    UI.SetSlider("Angle (radians)", &m_Angle, glm::radians(-90.0f), glm::radians(90.0f));
 
     if (UI.IsButtonPressed()) {
-        m_Angle = 0.01f;
-        m_Velocity = 0.01f;
-        m_Accel = 0.01f;
+        m_Accel    = 0.0f;
+        m_Velocity = 0.0f;
     }
 }
 
@@ -132,7 +137,7 @@ void Pendulum::UpdateBallPosition() {
 
 void Pendulum::DrawPendulum() {
 
-    InputHandling();
+    //InputHandling();
 
     shader.Bind();
     UI.NewFrame();

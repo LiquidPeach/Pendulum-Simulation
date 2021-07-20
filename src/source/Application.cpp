@@ -18,6 +18,7 @@ int main() {
     }
 
     glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
     glfwSwapInterval(1);
 
     gladLoadGL();
