@@ -53,15 +53,13 @@ void Pendulum::SetProjection(unsigned int windowWidth, unsigned int windowHeight
 void Pendulum::Calculations() { // TODO - Update calculations
 
     // Thank you The Coding Train for the Simple Pendulum Simulation video!
-    if (!isButtonDown) {
-        float force = GRAVITY * sin(m_Angle);
-        m_Accel = (-1 * force) / (m_Translation.y * m_Length);
-
-        m_Velocity *= 0.99;   // Dampening
-
-        m_Velocity += m_Accel;
-        m_Angle += m_Velocity;
-    }
+    float force = GRAVITY * sin(m_Angle);
+    m_Accel = (-1 * force) / (m_Translation.y * m_Length);
+    
+    m_Velocity *= 0.99;   // Dampening
+    
+    m_Velocity += m_Accel;
+    m_Angle    += m_Velocity;
 }
 
 void Pendulum::InputHandling() {
@@ -73,6 +71,10 @@ void Pendulum::InputHandling() {
     [ transl.x, transl.y, transl.z, 1 ]
     */
 
+    double xMousePos, yMousePos;
+    glfwGetCursorPos(m_Window, &xMousePos, &yMousePos);
+
+    /*
     // Get balls position measured in the screen's coordinates, where the top left is the origin
     float xBallPos = m_ModelBall[3][0] + (m_WindowWidth / 2);
     float yBallPos = (m_WindowHeight / 2) - m_ModelBall[3][1];
@@ -83,9 +85,6 @@ void Pendulum::InputHandling() {
     float minY = yBallPos - (ball.GetSize() / 2);
     float maxY = yBallPos + (ball.GetSize() / 2);
 
-    double xMousePos, yMousePos;
-    glfwGetCursorPos(m_Window, &xMousePos, &yMousePos);
-
     if (xMousePos > minX && xMousePos < maxX) {   // If the mouse is within the bounds of the ball
         if (yMousePos > minY && yMousePos < maxY)
             isHovering = true;
@@ -93,13 +92,29 @@ void Pendulum::InputHandling() {
             isHovering = false;
     }
     else
-        isHovering = false;
+        isHovering = false;*/
 
     int state = glfwGetMouseButton(m_Window, GLFW_MOUSE_BUTTON_LEFT);
-    if (isHovering && state == GLFW_PRESS)
+    if (state == GLFW_PRESS)
         isButtonDown = true;
     else
         isButtonDown = false;
+
+    if (isButtonDown) {
+        // restrict interactable area to where the end of the rope could reach
+        float startpoint = (m_WindowWidth / 2) - m_Length; // rope rotated at -90 degrees
+        float endpoint   = (m_WindowWidth / 2) + m_Length; // rope rotated at  90 degrees
+
+        if (xMousePos >= startpoint && xMousePos <= endpoint) {
+            float coords = endpoint - startpoint;
+            float percentDiff = (coords - (xMousePos - startpoint)) / coords;
+            float newAngle = (1.0f - percentDiff) * 180;
+            newAngle = newAngle - 90;
+            m_Angle = glm::radians(newAngle);
+        }
+    }
+    else
+        Calculations();
 }
 
 void Pendulum::SetRopeLength() { // Also setting rope angle with ImGui temporarily
@@ -116,7 +131,7 @@ void Pendulum::SetRopeLength() { // Also setting rope angle with ImGui temporari
 }
 
 void Pendulum::UpdateRopePosition() {
-
+    
     glm::vec3 pivot(0.0f, m_Pivot, 0.0f);                    // 1. Create desired pivot point of rotation (where the top of the rope would be)
     m_ModelRope  = glm::translate(glm::mat4(1.0f), pivot);   // 2. translate the model to the pivot
     m_ModelRope *= glm::rotate(glm::mat4(1.0f), m_Angle, glm::vec3(0, 0, 1.0f));  //3. Rotate the model
@@ -137,12 +152,10 @@ void Pendulum::UpdateBallPosition() {
 
 void Pendulum::DrawPendulum() {
 
-    //InputHandling();
-
     shader.Bind();
     UI.NewFrame();
 
-    Calculations();
+    InputHandling();
     UpdateBallPosition();
     UpdateRopePosition();
 
